@@ -30,55 +30,83 @@
 
   <script>
 
+  var map;
+
     function initMap() {
-      var myLatLng = {lat: 43.67023, lng: -79.38676};
       var geocoder = new google.maps.Geocoder();
 
       var map = new google.maps.Map(document.getElementById('map'), {
         zoom: 13,
-        center: myLatLng
+        center: {lat: 43.67023, lng: -79.38676}
       });
 
-    function restAddress(restaurant, contentString) {
-      var address = restaurant;
-      geocoder.geocode( { 'address': address }, function(results, status) {
-        if (status == google.maps.GeocoderStatus.OK) {
-          var marker = new google.maps.Marker({
-            map: map,
-            position: results[0].geometry.location
-          });
-          var infowindow = new google.maps.InfoWindow({
-            content: contentString
-          });
-          var info = marker.addListener('click', function() {
-            infowindow.open(map, marker);
-          });
-        } else {
-          alert("Geocode was not successful for the following reason: " + status);
-        }
-      });
+      var infoWindow = new google.maps.InfoWindow({map: map});
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+          var pos = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          };
+
+          infoWindow.setPosition(pos);
+          infoWindow.setContent('You are here.');
+          map.setCenter(pos);
+        }, function() {
+          handleLocationError(true, infoWindow, map.getCenter());
+        });
+      } else {
+        // Browser doesn't support Geolocation
+        handleLocationError(false, infoWindow, map.getCenter());
+      }
+
+      function restAddress(restaurant, contentString) {
+        var address = restaurant;
+        geocoder.geocode( { 'address': address }, function(results, status) {
+          if (status == google.maps.GeocoderStatus.OK) {
+            var marker = new google.maps.Marker({
+              map: map,
+              position: results[0].geometry.location
+            });
+            var infowindow = new google.maps.InfoWindow({
+              content: contentString
+            });
+            var info = marker.addListener('click', function() {
+              infowindow.open(map, marker);
+            });
+          } else {
+            alert("Geocode was not successful for the following reason: " + status);
+          }
+        });
+      }
+
+      restAddress("218 Adelaide Street West, Toronto, Ontario", 
+        "<h4>Burrito Boyz</h4>" + "<p>This is my fav burrito place ever. Not just in Toronto. Seriously. You haven't had a burrito until you've had a Burrito Boyz burrito. Lots of other locations in the GTA.</p>"
+      );
+
+      restAddress("221 Ossington Avenue, Toronto, Ontario", 
+        "<h4>Pizzeria Libretto</h4>" + "<p>Love their pizza. And pretty much everything else on the menu.</p>"
+      );
+
+      restAddress("72 Ossington Avenue, Toronto, Ontario", 
+        "<h4>Union</h4>" + "<p>The Elk Sliders are delish. All meats are locally sourced.</p>"
+      );
+
+      restAddress("392 Queen Street West, Toronto, Ontario", 
+        "<h4>Banh Mi Boyz</h4>" + "<p>I've only tried the Lemongrass Tofu, but I expect that the rest of their food is just as amazing.</p>"
+      );
+
+      restAddress("350 King Street West, Toronto, Ontario", 
+        "<h4>Luma</h4>" + "<p>Can't stop thinking about their Gnocchi.</p>"
+      );
+
     }
 
-    restAddress("218 Adelaide Street West, Toronto, Ontario", 
-      "<h4>Burrito Boyz</h4>" + "<p>This is my fav burrito place ever. Not just in Toronto. Seriously. You haven't had a burrito until you've had a Burrito Boyz burrito. Lots of other locations in the GTA.</p>"
-    );
-
-    restAddress("221 Ossington Avenue, Toronto, Ontario", 
-      "<h4>Pizzeria Libretto</h4>" + "<p>Love their pizza. And pretty much everything else on the menu.</p>"
-    );
-
-    restAddress("72 Ossington Avenue, Toronto, Ontario", 
-      "<h4>Union</h4>" + "<p>The Elk Sliders are delish. All meats are locally sourced.</p>"
-    );
-
-    restAddress("392 Queen Street West, Toronto, Ontario", 
-      "<h4>Banh Mi Boyz</h4>" + "<p>I've only tried the Lemongrass Tofu, but I expect that the rest of their food is just as amazing.</p>"
-    );
-
-    restAddress("350 King Street West, Toronto, Ontario", 
-      "<h4>Luma</h4>" + "<p>Can't stop thinking about their Gnocchi.</p>"
-    );
-
+    function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+      infoWindow.setPosition(pos);
+      infoWindow.setContent(browserHasGeolocation ?
+        'Error: The Geolocation service failed.' :
+        'Error: Your browser doesn\'t support geolocation.');
     }
 
   </script>
