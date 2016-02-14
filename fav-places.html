@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link href='https://fonts.googleapis.com/css?family=Bitter' rel='stylesheet' type='text/css'>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>Simple markers</title>
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #map {
+        height: 70%;
+      }
+      #content {
+        margin-left: 30px;
+        font-family: 'Bitter', serif;
+      }
+    </style>
+  </head>
+  <body>
+  
+    <div id="content">
+      <h2>My Fav Places to Eat in Toronto</h2>
+    </div>
+
+    <div id="map"></div>
+
+  <script>
+
+    function initMap() {
+      var myLatLng = {lat: 43.67023, lng: -79.38676};
+      var geocoder = new google.maps.Geocoder();
+
+      var map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 13,
+        center: myLatLng
+      });
+
+    function restAddress(restaurant, contentString) {
+      var address = restaurant;
+      geocoder.geocode( { 'address': address }, function(results, status) {
+        if (status == google.maps.GeocoderStatus.OK) {
+          var marker = new google.maps.Marker({
+            map: map,
+            position: results[0].geometry.location
+          });
+          var infowindow = new google.maps.InfoWindow({
+            content: contentString
+          });
+          var info = marker.addListener('click', function() {
+            infowindow.open(map, marker);
+          });
+        } else {
+          alert("Geocode was not successful for the following reason: " + status);
+        }
+      });
+    }
+
+    restAddress("218 Adelaide Street West, Toronto, Ontario", 
+      "<h4>Burrito Boyz</h4>" + "<p>This is my fav burrito place ever. Not just in Toronto. Seriously. You haven't had a burrito until you've had a Burrito Boyz burrito. Lots of other locations in the GTA.</p>"
+    );
+
+    restAddress("221 Ossington Avenue, Toronto, Ontario", 
+      "<h4>Pizzeria Libretto</h4>" + "<p>Love their pizza. And pretty much everything else on the menu.</p>"
+    );
+
+    restAddress("72 Ossington Avenue, Toronto, Ontario", 
+      "<h4>Union</h4>" + "<p>The Elk Sliders are delish. All meats are locally sourced.</p>"
+    );
+
+    restAddress("392 Queen Street West, Toronto, Ontario", 
+      "<h4>Banh Mi Boyz</h4>" + "<p>I've only tried the Lemongrass Tofu, but I expect that the rest of their food is just as amazing.</p>"
+    );
+
+    restAddress("350 King Street West, Toronto, Ontario", 
+      "<h4>Luma</h4>" + "<p>Can't stop thinking about their Gnocchi.</p>"
+    );
+
+    }
+
+  </script>
+
+  <script async defer
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyArdCBl39jhcHR3ozAR5m_hQ9Sx5ST8fw8&signed_in=true&callback=initMap">
+  </script>
+
+  </body>
+</html>
